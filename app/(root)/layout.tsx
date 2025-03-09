@@ -1,4 +1,4 @@
-// import MobileNav from "@/components/MobileNav";
+import MobileNav from "@/components/MobileNav";
 import Sidebar from "@/components/Sidebar";
 // import { getLoggedInUser } from "@/lib/actions/user.actions";
 import Image from "next/image";
@@ -25,7 +25,7 @@ export default async function RootLayout({
         
         {/* Mobile Nav */}
           <div>
-            {/* <MobileNav user={loggedIn} /> */}
+            <MobileNav  />
           </div>
         </div>
         {children}
