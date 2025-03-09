@@ -21,9 +21,11 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.479.0",
     "next": "15.2.1",
-    "postcss": "^8.5.3",
+    "postcss-flexbugs-fixes": "5.0.2",
+    "postcss-preset-env": "10.1.5",
     "query-string": "^9.1.1",
     "react": "^19.0.0",
+    "react-chartjs-2": "^5.3.0",
     "react-countup": "^6.5.3",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
@@ -37,9 +39,27 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.20",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
+    "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
-  }
+  },
+  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codekarimi/Pesa_Bank.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codekarimi/Pesa_Bank/issues"
+  },
+  "homepage": "https://github.com/codekarimi/Pesa_Bank#readme"
 }
