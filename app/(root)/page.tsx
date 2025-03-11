@@ -1,9 +1,13 @@
 import React from 'react'
 import HeaderBox from '@/components/HeaderBox'
+import TotalBalanceBox from '@/components/TotalBalanceBox'
+import RightSidebar from '@/components/RightSidebar'
+import { getLoggedInUser } from '@/lib/actions/user.actions';
 
-const page = () => {
+const page = async() => {
 
-  const loggedIn = {firstName:"Karimi"}
+  const loggedIn = await getLoggedInUser();
+  
   return (
     <section className="home">
     <div className="home-content">
@@ -11,15 +15,15 @@ const page = () => {
         <HeaderBox 
           type="greeting"
           title="Welcome"
-          user={loggedIn?.firstName || 'Guest'}
+          user={loggedIn?.name || 'Guest'}
           subtext="Access and manage your account and transactions efficiently."
         />
 
-        {/* <TotalBalanceBox 
-          accounts={accountsData}
-          totalBanks={accounts?.totalBanks}
-          totalCurrentBalance={accounts?.totalCurrentBalance}
-        /> */}
+        <TotalBalanceBox 
+          accounts={[]}
+          totalBanks={1}
+          totalCurrentBalance={12564}
+        />
       </header>
 
       {/* <RecentTransactions 
@@ -30,11 +34,14 @@ const page = () => {
       /> */}
     </div>
 
-    {/* <RightSidebar 
+    <RightSidebar 
       user={loggedIn}
-      transactions={account?.transactions}
-      banks={accountsData?.slice(0, 2)}
-    /> */}
+      // transactions={}
+      banks={[{id:"12"},{currentBalance:1256}]}
+    />
+
+
+
   </section>
   )
 }
