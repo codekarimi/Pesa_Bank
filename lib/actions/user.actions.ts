@@ -101,9 +101,9 @@ export const signIn = async ({ email, password }: signInProps) => {
       secure: true,
     });
 
-    // const user = await getUserInfo({ userId: session.userId });
+    const user = await getUserInfo({ userId: session.userId });
 
-    return parseStringify(session);
+    return parseStringify(user);
   } catch (error) {
     console.error("Error", error);
     return null;
@@ -115,81 +115,36 @@ export const getLoggedInUser = async () => {
     const { account } = await createSessionClient();
     const result = await account.get();
 
-    // const user = await getUserInfo({ userId: result.$id });
+    const user = await getUserInfo({ userId: result.$id });
 
-    return parseStringify(result);
+    return parseStringify(user);
   } catch (error) {
     console.error("Error", error);
     return null;
   }
 };
 
-//logout
-export const logoutAccount= async () => {
-  
-  try {
-    const { account } = await createSessionClient();
-
-     (await cookies()).delete("appwrite-session");
-
-     await account.deleteSession("curent")
-
-    
-  } catch (error) {
-    return null;
-  }
-}
-
 // CREATE PLAID LINK TOKEN
 export const createLinkToken = async (user: User) => {
   try {
-    const tokenParams = {
+    const tokeParams = {
       user: {
-        client_user_id: user.$id
+        client_user_id: user.$id,
       },
-      client_name: `${user.firstName} ${user.lastName}`,
-      products: ['auth'] as Products[],
-      language: 'en',
-      country_codes: ['US'] as CountryCode[],
-    }
+      client_name: user.firstName + user.lastName,
+      products: ["auth"] as Products[],
+      language: "en",
+      country_codes: ["US"] as CountryCode[],
+    };
 
-    const response = await plaidClient.linkTokenCreate(tokenParams);
+    const response = await plaidClient.linkTokenCreate(tokeParams);
 
-    return parseStringify({ linkToken: response.data.link_token })
+    return parseStringify({ linkToken: response.data.link_token });
   } catch (error) {
-    console.log(error);
-  }
-}
-
-export const createBankAccount = async ({
-  accessToken,
-  userId,
-  accountId,
-  bankId,
-  fundingSourceUrl,
-  sharableId,
-}: createBankAccountProps) => {
-  try {
-    const { database } = await createAdminClient();
-
-    const bankAccount = await database.createDocument(
-      DATABASE_ID!,
-      BANK_COLLECTION_ID!,
-      ID.unique(),
-      {
-        accessToken,
-        userId,
-        accountId,
-        bankId,
-        fundingSourceUrl,
-        sharableId,
-      }
+    console.error(
+      "An error occurred while creating a new Horizon user:",
+      error
     );
-
-    return parseStringify(bankAccount);
-  } catch (error) {
-    console.error("Error", error);
-    return null;
   }
 };
 
@@ -243,7 +198,7 @@ export const exchangePublicToken = async ({
       accountId: accountData.account_id,
       accessToken,
       fundingSourceUrl,
-      sharableId: encryptId(accountData.account_id),
+      shareableId: encryptId(accountData.account_id),
     });
 
     // Revalidate the path to reflect the changes
@@ -259,83 +214,113 @@ export const exchangePublicToken = async ({
   }
 };
 
-// export const getUserInfo = async ({ userId }: getUserInfoProps) => {
-//   try {
-//     const { database } = await createAdminClient();
+export const getUserInfo = async ({ userId }: getUserInfoProps) => {
+  try {
+    const { database } = await createAdminClient();
 
-//     const user = await database.listDocuments(
-//       DATABASE_ID!,
-//       USER_COLLECTION_ID!,
-//       [Query.equal("userId", [userId])]
-//     );
+    const user = await database.listDocuments(
+      DATABASE_ID!,
+      USER_COLLECTION_ID!,
+      [Query.equal("userId", [userId])]
+    );
 
-//     if (user.total !== 1) return null;
+    if (user.total !== 1) return null;
 
-//     return parseStringify(user.documents[0]);
-//   } catch (error) {
-//     console.error("Error", error);
-//     return null;
-//   }
-// };
+    return parseStringify(user.documents[0]);
+  } catch (error) {
+    console.error("Error", error);
+    return null;
+  }
+};
 
+export const createBankAccount = async ({
+  accessToken,
+  userId,
+  accountId,
+  bankId,
+  fundingSourceUrl,
+  shareableId,
+}: createBankAccountProps) => {
+  try {
+    const { database } = await createAdminClient();
 
+    const bankAccount = await database.createDocument(
+      DATABASE_ID!,
+      BANK_COLLECTION_ID!,
+      ID.unique(),
+      {
+        accessToken,
+        userId,
+        accountId,
+        bankId,
+        fundingSourceUrl,
+        shareableId,
+      }
+    );
+
+    return parseStringify(bankAccount);
+  } catch (error) {
+    console.error("Error", error);
+    return null;
+  }
+};
 
 // get user bank accounts
-// export const getBanks = async ({ userId }: getBanksProps) => {
-//   try {
-//     const { database } = await createAdminClient();
+export const getBanks = async ({ userId }: getBanksProps) => {
+  try {
+    const { database } = await createAdminClient();
 
-//     const banks = await database.listDocuments(
-//       DATABASE_ID!,
-//       BANK_COLLECTION_ID!,
-//       [Query.equal("userId", [userId])]
-//     );
+    const banks = await database.listDocuments(
+      DATABASE_ID!,
+      BANK_COLLECTION_ID!,
+      [Query.equal("userId", [userId])]
+    );
 
-//     return parseStringify(banks.documents);
-//   } catch (error) {
-//     console.error("Error", error);
-//     return null;
-//   }
-// };
+    return parseStringify(banks.documents);
+  } catch (error) {
+    console.error("Error", error);
+    return null;
+  }
+};
 
 // get specific bank from bank collection by document id
-// export const getBank = async ({ documentId }: getBankProps) => {
-//   try {
-//     const { database } = await createAdminClient();
+export const getBank = async ({ documentId }: getBankProps) => {
+  try {
+    const { database } = await createAdminClient();
 
-//     const bank = await database.listDocuments(
-//       DATABASE_ID!,
-//       BANK_COLLECTION_ID!,
-//       [Query.equal("$id", [documentId])]
-//     );
+    const bank = await database.listDocuments(
+      DATABASE_ID!,
+      BANK_COLLECTION_ID!,
+      [Query.equal("$id", [documentId])]
+    );
 
-//     if (bank.total !== 1) return null;
+    if (bank.total !== 1) return null;
 
-//     return parseStringify(bank.documents[0]);
-//   } catch (error) {
-//     console.error("Error", error);
-//     return null;
-//   }
-// };
+    return parseStringify(bank.documents[0]);
+  } catch (error) {
+    console.error("Error", error);
+    return null;
+  }
+};
 
 // get specific bank from bank collection by account id
-// export const getBankByAccountId = async ({
-//   accountId,
-// }: getBankByAccountIdProps) => {
-//   try {
-//     const { database } = await createAdminClient();
+export const getBankByAccountId = async ({
+  accountId,
+}: getBankByAccountIdProps) => {
+  try {
+    const { database } = await createAdminClient();
 
-//     const bank = await database.listDocuments(
-//       DATABASE_ID!,
-//       BANK_COLLECTION_ID!,
-//       [Query.equal("accountId", [accountId])]
-//     );
+    const bank = await database.listDocuments(
+      DATABASE_ID!,
+      BANK_COLLECTION_ID!,
+      [Query.equal("accountId", [accountId])]
+    );
 
-//     if (bank.total !== 1) return null;
+    if (bank.total !== 1) return null;
 
-//     return parseStringify(bank.documents[0]);
-//   } catch (error) {
-//     console.error("Error", error);
-//     return null;
-//   }
-// };
+    return parseStringify(bank.documents[0]);
+  } catch (error) {
+    console.error("Error", error);
+    return null;
+  }
+};
