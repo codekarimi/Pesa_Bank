@@ -124,6 +124,18 @@ export const getLoggedInUser = async () => {
   }
 };
 
+export const logoutAccount = async () => {
+  try {
+    const { account } = await createSessionClient();
+
+    (await cookies()).delete('appwrite-session');
+
+    await account.deleteSession('current');
+  } catch (error) {
+    return null;
+  }
+}
+
 // CREATE PLAID LINK TOKEN
 export const createLinkToken = async (user: User) => {
   try {
